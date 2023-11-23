@@ -47,22 +47,22 @@ const openPage = async (browser, url = null) => {
 		if (!url) {
 			url = 'https://true.growsuite.truelab.live/showtime/guest';
 		}
-
-		let retry = 5;
+		let max_retry = 10;
+		let remain_retry = max_retry;
 		var start = (new Date()).getTime();
-		while (--retry){
+		while (--remain_retry){
 			try{
 				await page.goto(url);
 				break;
 			} catch (e){
 				await closePage(page);
-				await new Promise(resolve => setTimeout(resolve, 1000));
+				await new Promise(resolve => setTimeout(resolve, 5000));
 				page = await browser.newPage();
 			}
 		}
 		var end = (new Date()).getTime();
 
-		console.log("Retry---" + (5 - retry) + " Duration: " + (end - start))
+		console.log("Retry---" + (max_retry - remain_retry) + " Duration: " + (end - start))
 
 		return page;
 
@@ -78,10 +78,8 @@ const closePage = async (page, browser = null) => {
 		if (browser) {
 			await browser.close();
 		}
-
-		console.log("Page and browser closed successfully");
 	} catch (e) {
-		console.log("Error while closing page and browser", e);
+		
 	}
 };
 
